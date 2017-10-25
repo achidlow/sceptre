@@ -19,6 +19,7 @@ from botocore.exceptions import ClientError
 
 from .helpers import mask_key
 from .exceptions import RetryLimitExceededError
+from .profile_caching import inject_profile_caching
 
 
 def _retry_boto_call(func):
@@ -82,7 +83,7 @@ class ConnectionManager(object):
         self.region = region
         self.iam_role = iam_role
         self.profile = profile
-        self._boto_session = None
+        self.__boto_session = None
         self._boto_session_expiration = None
 
         self.clients = {}
@@ -94,6 +95,14 @@ class ConnectionManager(object):
                 self.region, self.iam_role, self.profile
             )
         )
+
+    @property
+    def _boto_session(self):
+        return self.__boto_session
+
+    @_boto_session.setter
+    def _boto_session(self, session):
+        self.__boto_session = inject_profile_caching(session)
 
     @property
     def boto_session(self):
