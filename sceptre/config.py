@@ -185,12 +185,12 @@ class Config(dict):
                     if yaml_data is not None:
                         config = yaml_data
                 cascaded_config = get_config(os.path.dirname(path))
-                cascaded_config.update(config)
+                _merge(config, into=cascaded_config)
                 return cascaded_config
 
         config = get_config(path)
 
-        self.update(config)
+        _merge(config, into=self)
 
         self._check_version()
 
@@ -333,3 +333,14 @@ class Config(dict):
                 "Added constructor for %s with node tag %s",
                 str(node_class), node_tag
             )
+
+
+def _merge(data: dict, into: dict):
+    for key, new_value in data.items():
+        old_value = into.get(key)
+        if isinstance(old_value, list):
+            old_value.extend(new_value)
+        elif isinstance(old_value, dict):
+            _merge(new_value, into=old_value)
+        else:
+            into[key] = new_value

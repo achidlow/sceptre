@@ -8,9 +8,10 @@ __all__ = [
 
 
 def inject_profile_caching(session):
-    cred_chain = session._session.get_component('credential_provider')
-    provider = cred_chain.get_provider('assume-role')
-    provider.cache = JSONFileCache()
+    if hasattr(session, '_session'):
+        cred_chain = session._session.get_component('credential_provider')
+        provider = cred_chain.get_provider('assume-role')
+        provider.cache = JSONFileCache()
     return session
 
 
