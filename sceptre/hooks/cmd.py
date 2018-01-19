@@ -7,10 +7,6 @@ class Cmd(Hook):
     """
     Cmd implements a Sceptre hook which can run arbitrary commands.
     """
-
-    def __init__(self, *args, **kwargs):
-        super(Cmd, self).__init__(*args, **kwargs)
-
     def run(self):
         """
         Runs the argument string in a subprocess.
